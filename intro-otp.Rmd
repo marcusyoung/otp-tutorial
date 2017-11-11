@@ -82,7 +82,7 @@ Unable to allocate ... bitmaps for parallel garbage collection for the requested
 Error: Could not create the Java Virtual Machine.
 ```
 
-The build process should take 2-3 minutes to complete. Don't worry about the errors that flash up during the process, these mostly relate to railway station stops that are located outside of the Greater Manchester are, and there is no road network to link them to. Once complete, you will see a file called 'Graph.obj' in the 'current' directory.
+The build process should take 2-3 minutes to complete. Don't worry about the errors that flash up during the process, these mostly relate to railway station stops that are located outside of the Greater Manchester area, and there is no road network to link them to. Once complete, you will see a file called 'Graph.obj' in the 'current' directory.
 
 
 ### Start up OTP server
