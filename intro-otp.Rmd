@@ -1,5 +1,5 @@
 ---
-title: "Introduction to OpenTripPlanner - creating a bespoke multi-modal route planner"
+title: "OpenTripPlanner tutorial - creating and querying your own multi-modal route planner"
 author: "Marcus Young"
 date: "11 November 2017"
 output:
@@ -45,7 +45,7 @@ Once you have extracted this folder, you should see the following files:
 
 
 
-## Part 1 - Setting up and testing an OTP instance (30 mins)
+## Part 1 - Setting up and testing an OTP instance (35 mins)
 
 
 
@@ -107,18 +107,15 @@ Congratulations, you know your very own multi-modal router planner!
 
 ## Extras (if you have time)
 
-For troubleshooting routing issues, you can visualise the traversal permissions of street edges, bike safety of edges, and how transit stops are linked to streets. For these additional debug layers to be available, add `?debug_layers=true` to the URL:  [http://localhost:8080?debug_layers=true](http://localhost:8080?debug_layers=true). The extra layers will now appear in the layer stack menu. Figure 2 shows the Bike Safety layer (green signifies most safe, red the least safe).
+For troubleshooting routing issues, you can visualise the traversal permissions of street edges, bike safety of edges, and how transit stops are linked to streets. For these additional debug layers to be available, add `?debug_layers=true` to the URL:  [http://localhost:8080?debug_layers=true](http://localhost:8080?debug_layers=true). The extra layers will now appear in the layer stack menu. Figure \ref{fig:otpdebug} shows the Bike Safety layer (green signifies most safe, red the least safe).
 
 
 ```{r, out.width = "11cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpdebug}OTP Web GUI with Bike Safety debug layer activated"}
 knitr::include_graphics("images/otpdebug.png")
 ```
 
-Create another router called 'new' and include the 'aircoach-gtfs.zip', and the same files used for the 'current' router. Build the graph for this router, and then try running OTP in server mode with both the 'current' and 'new' routers loaded.    
 
-
-
-## Task 2 - generating travel time isochrones
+## Task 2 - generating travel time isochrones (35 mins)
 
 Now that we have a working instance of OTP, we'll use it to generate travel-time isochrones. We are interested in visualising how long it takes to access Manchester Airport using public transport from different parts of the Greater Manchester area. We will do this by requesting isochrones from OTP for 15, 30, 45, 60, 75 and 90 minutes. This can be acheive with a single query to the 'Isochrone' resource of the OTP API.
 
@@ -133,7 +130,6 @@ A long URL like this will soon get very confusing and prone to errors, so we wil
 ```{r isochrone_current, eval=FALSE}
 
 library(httr)
-
 airport_current <- GET(
   "http://localhost:8080/otp/routers/current/isochrone",
   query = list(
@@ -164,9 +160,121 @@ write(airport_current, file = "airport_current.geojson")
 
 ```
 
-You can now import the GeoJSON file into QGIS, using 'the 'Add Vector Layer' and then apply a suitable style. Use the OpenLayers plugin to add a suitable basemap.
+You can now import the GeoJSON file into QGIS, using 'the 'Add Vector Layer' and then apply a suitable categorized style based on the time attribute. Use the OpenLayers plugin to add a suitable basemap. You should finish up with something similar to Figure \ref{fig:airportcurrent}
 
-## Task 3 - automating OTP API lookups using R
+```{r, out.width = "11cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:airportcurrent}15-90 minute isochrone for Manchester Airport - based on current services", fig.pos='h'}
+knitr::include_graphics("images/airport-isochrone-current.png")
+```
+
+
+The isochrone map indicates poor accessibility by public transport from the Wigan district. You have been asked to assess the impact of an airport link coach running from Wigan to Manchester Airport every ten minutes between 06:00 and 22:00. You have been provided with a GTFS feed, 'aircoach-gtfs.zip', which contains the information about this proposed service.
+
+**Challenge: create another router called 'new' which incorporate the proposed airport link service. Request an isochrone from the new router and visualise it using QGIS.**
+
+
+Hopefully, your new isochrone will look similar to Figure \ref{fig:airportnew}. We can see that the new service has greatly improved accessibility to the airport by public transport from the Wigan district. 
+
+
+```{r, out.width = "11cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:airportnew}15-90 minute isochrone for Manchester Airport - with new Wigan Air Coach", fig.pos='h'}
+knitr::include_graphics("images/airport-isochrone-new.png")
+```
+
+This simple example illustrates the major advantage of running your own multi-modal route planner, compared to services such as Google Maps or TransportAPI. You can carry out analysis using amended transport data. This could be changes to transit shcedules, as in this example, or changes to the underlying street network. By editing an offline copy of OSM, you could model the effects of creating new roads, closing roads, or imposing other restrictions. You can also look back in time. For example, you might want to examine the effect of reductions in rural bus services on accessibility to health facilities. To do this you will need a network with bus schedules as they were *x* years ago. 
+
+
+## Task 3 - automating OTP API lookups using R (35 mins)
+
+In this final task we are going to see how we can automate querying the OTP API to generate large quantities of route data - potentially for many thousands of origin:destination pairs. In this example, we will gather data on accessing Manchester Airport using public transport for each of the Lower Super Output Areas (LSOAs) in Greater Manchester.
+
+We will start by importing a CSV file containing the LSOA data into an R dataframe:
+
+```{r load lsao, eval=FALSE}
+
+# Import the LSOA CSV file
+gm_lsoa_centroids <- read.csv("data/gm_lsoa_centroids.csv", stringsAsFactors = FALSE)
+
+
+```
+
+We next need to load a set of R functions that can be used to query the OTP API. These functions have not yet been made into an R package, so we just read the file using the 'source' function.
+
+```{r load functions, eval=FALSE}
+
+# Load the OTP API functions
+source("functions/fn_otp_api.R")
+
+```
+
+
+```{r load functions, eval=FALSE}
+
+# set total number of records - used in the for loop and the progress bar
+total <- nrow(gm_lsoa_centroids)
+
+
+# set OTP connection
+otpcon <-
+  otpConnect(
+    hostname = "localhost",
+    router = "current",
+    port = "8080",
+    ssl = "false"
+  )
+
+
+# set api parameters
+modes <- "TRANSIT,WALK"
+
+dest_latlong <- '53.3627432,-2.2729342'
+
+# Initialise progress bar
+pb <- progress_bar$new(total = total, format = "(:spin) [:bar] :percent")
+
+  
+for (i in 1:total) {
+  # update progress bar
+  pb$tick()
+  
+  origin_latlong <- gm_lsoa_centroids[i, ]$latlong
+  
+  response <-
+    otpTripTime(
+      otpcon,
+      from = origin_latlong,
+      to = dest_latlong,
+      modes = modes,
+      detail = TRUE,
+      date = '2017-07-12',
+      time = '08:00am',
+      maxWalkDistance <- "1600", # allows 800m at both ends of bus journey
+      walkReluctance <- "5",
+      minTransferTime <- "600",
+      transferPenalty <- "0"
+    )
+  
+  
+  # If errorId of response is OK update df with duration
+  if (response$errorId == "OK") {
+    gm_lsoa_centroids[i, "status"] <- response$errorId
+    gm_lsoa_centroids[i, "duration"] <-
+      response$itineraries$duration
+    gm_lsoa_centroids[i, "walktime"] <-
+      response$itineraries$walkTime
+    gm_lsoa_centroids[i, "transittime"] <-
+      response$itineraries$transitTime
+    gm_lsoa_centroids[i, "waitingtime"] <-
+      response$itineraries$waitingTime
+    gm_lsoa_centroids[i, "transfers"] <-
+      response$itineraries$transfers
+  } else {
+    # record error 999999
+    gm_lsoa_centroids[i, "status"] <- response$errorId
+  }
+}
+
+
+write.csv(gm_lsoa_centroids, file = "../../Teaching and consultancy/gis4ta/gm_lsoa_accessibility.csv", row.names = FALSE)
+```
 
 
 ## Further resources
