@@ -3,8 +3,11 @@ title: "Introduction to OpenTripPlanner - creating a bespoke multi-modal route p
 author: "Marcus Young"
 date: "11 November 2017"
 output:
-  html_document:
-  highlight: pygments
+
+  pdf_document: 
+    highlight: tango
+    fig_caption: true
+
 ---
 
 ```{r setup, include=FALSE}
@@ -50,52 +53,127 @@ Once you have extracted this folder, you should see the following files:
 
 An OTP graph specifies every location in the region covered and how to travel between them, and is compiled by OTP using OSM data for the street and path network (used for walk, bicycle and drive modes) and GTFS data for transit scheduling. It can also incorporate a digital terrain model (provided in GeoTIFF format) which is 'draped' over the street network and can be used in routing - for example to request a flatter cycling route.
 
-Our first task is to create the folder and file structure expected by OTP. This requires a base directory called 'otp' which contains the OTP JAR file, followed by a subdirectory called 'graphs'. Each subdirectory created under 'graphs' is known as an OTP router, and contains all the files required to build a graph. A single OTP instance can host several routers - for example covering different regions, or containing alternative data for the same region. 
+Our first task is to create the folder and file structure expected by OTP. This requires a base directory called 'otp' which contains the OTP JAR file, and a subdirectory called 'graphs'. Subdirectories created under 'graphs' are known as OTP routers, and contain all the files required to build a graph. A single OTP instance can host several routers - for example covering different regions, or containing alternative transit data for the same region. 
 
 Create a router called 'current', and include the GTFS and OSM files for the road network and current transit schedules for Greater Manchester, along with router-config.json, as shown below:   
 
 ```{r, engine = 'bash', eval = FALSE}
 /otp
- └── otp.jar
- └── graphs
-     └── current
-         ├── rail-gtfs.zip
-         ├── tfgm-gtfs.zip
-         ├── greater-manchester-osm.pbf
-         └── router-config.json
-         
+  otp.jar
+  /graphs
+     /current
+         rail-gtfs.zip
+         tfgm-gtfs.zip
+         greater-manchester-osm.pbf
+         router-config.json
 ```
 
 With the structure created and the files in place, we can now build the graph. We do this by running OTP and specifiying the 'build' option. OTP runs within a Java virtual machine (JVM), which is provided by the Java runtime environment (JRE). Before continuing, run `java -version` from the command prompt or terminal to check that you have version 1.8 of the JVM installed. If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html])
 
-Open the command prompt or terminal and change to the 'otp' directory you created earlier. Then run the following command:
+From the command prompt or terminal, change to the 'otp' directory you created earlier. Then run the following command:
 
 ```{r, engine = 'bash', eval = FALSE}
 java -Xmx2G -jar otp.jar --build graphs/current
 ```
 
-The java option -Xmx2G allocates up to 2GB of RAM to the JVM. If you do not have this much free RAM available OTP will likely fail during the build process. If you get a message similar to the one below, and think you have enough RAM available, you may need to install the 64-bit version of JRE, available at the link above.
+The java option -Xmx2G allocates up to 2GB of RAM to the JVM. If you do not have this much free RAM available OTP will likely fail during the build process. The \--build option tells OTP that we want to build a graph, and ,graphs/current, is the path to the router directory (in this case 'current').
 
-```{r, engine = 'dot', eval = FALSE}
-Error occurred during initialization of VM
-Unable to allocate ... bitmaps for parallel garbage collection for the requested ... heap.
-Error: Could not create the Java Virtual Machine.
-```
-
-The build process should take 2-3 minutes to complete. Don't worry about the errors that flash up during the process, these mostly relate to railway station stops that are located outside of the Greater Manchester area, and there is no road network to link them to. Once complete, you will see a file called 'Graph.obj' in the 'current' directory.
+The build process should take 2-3 minutes to complete. Don't worry about the errors that flash up during the process, these mostly relate to railway stations that are located outside of the Greater Manchester area, and there is no road network to link them to. Once complete, you will see a file called 'Graph.obj' in the 'current' directory.
 
 
 ### Start up OTP server
 
-To start up your OTP server, using the router called `current' and the graph you create above
+The next step is to start up your OTP server, running the router called `current'. OTP will load the graph you created into memory and you will then be able to plan multi-modal routes using the web interface. From the OTP directory, run the following command:
+
+```{r, engine = 'bash', eval = FALSE}
+java -Xmx2G -jar otp.jar --router current --graphs graphs --server
+```
+
+\--router is used to specify the name of the router we want to use (this can be repeated if you want a single instance of OTP to run more than one router); \--graphs specifies the location of the graph directory (relative to current directory or a full path); and \--server indcates that we want to launch OTP in server mode (rather than the build mode we used earlier). OTP has a built-in web server called Grizzly which runs on port 8080. If you have another application running on your computer that uses this port then you will need specify an alternative port using the \--port option, for example:
+
+```{r, engine = 'bash', eval = FALSE}
+java -Xmx2G -jar otp.jar --router current --graphs graphs --server --port 8888
+```
+
+It should only take a minute or two for OTP to load the graph and start the Grizzly server. If all has worked you should now see the message: `Grizzly server running`. You must leave the command prompt/terminal window open. If you close it, the server will stop running. You can stop the server without closing the window by pressing `Ctrl-C`.
+
+You can now access the web interface using the URL: [http://localhost:8080](http://localhost:8080). Note: The web interface does not work correctly in Internet Explorer - use Firefox or Chrome. You can now zoom into the Manchester area and request a route by setting an origin and a destination directly on the map (by right clicking your mouse) and you can specify travel dates, times and modes using the 'Trip Options' window (see Figure \ref{fig:otpgui}). You can change the background map from the layer stack icon at the top right.
+
+```{r, out.width = "11cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpgui}OTP Web GUI"}
+knitr::include_graphics("images/otpwebgui.png")
+```
+
+Congratulations, you know your very own multi-modal router planner!
+
+## Extras (if you have time)
+
+For troubleshooting routing issues, you can visualise the traversal permissions of street edges, bike safety of edges, and how transit stops are linked to streets. For these additional debug layers to be available, add `?debug_layers=true` to the URL:  [http://localhost:8080?debug_layers=true](http://localhost:8080?debug_layers=true). The extra layers will now appear in the layer stack menu. Figure 2 shows the Bike Safety layer (green signifies most safe, red the least safe).
 
 
+```{r, out.width = "11cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpdebug}OTP Web GUI with Bike Safety debug layer activated"}
+knitr::include_graphics("images/otpdebug.png")
+```
 
-If you have time, create an additional router called 'new' and (you can always do this during Part 2 below)
+Create another router called 'new' and include the 'aircoach-gtfs.zip', and the same files used for the 'current' router. Build the graph for this router, and then try running OTP in server mode with both the 'current' and 'new' routers loaded.    
+
 
 
 ## Task 2 - generating travel time isochrones
 
+Now that we have a working instance of OTP, we'll use it to generate travel-time isochrones. We are interested in visualising how long it takes to access Manchester Airport using public transport from different parts of the Greater Manchester area. We will do this by requesting isochrones from OTP for 15, 30, 45, 60, 75 and 90 minutes. This can be acheive with a single query to the 'Isochrone' resource of the OTP API.
 
+To send the query to OTP, you could use your browser to submit a long URL, something like this:
+
+[http://localhost:8080/otp/routers/current/isochrone?fromPlace=53.3627432,-2.2729342&mode=WALK,TRANSIT&date=07-10-2017&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=100000](http://localhost:8080/otp/routers/current/isochrone?fromPlace=53.3627432,-2.2729342&mode=WALK,TRANSIT&date=07-10-2017&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=100000)
+
+OTP will then return the isochrone polygons in GeoJSON format, which you can download and then import into a GIS.
+
+A long URL like this will soon get very confusing and prone to errors, so we will use R to construct the URL, submit it to the OTP API, and save the returned GeoJSON object. To do this, we can use the 'GET' method from the 'httr' package. The code you need is shown below. We provide the 'GET' method with the base URL to access the isochrone resource for the router called 'current' and then specify the query parameters to append to the URL. This will submit exactly the same URL as shown above, but it is much easier to see and amend the parameters and their values.
+
+```{r isochrone_current, eval=FALSE}
+
+library(httr)
+
+airport_current <- GET(
+  "http://localhost:8080/otp/routers/current/isochrone",
+  query = list(
+    fromPlace = "53.3627432,-2.2729342", # latlong of Manchester Airport
+    mode = "WALK,TRANSIT", # modes we want the route planner to use
+    date = "07-10-2017",
+    time= "08:00am",
+    maxWalkDistance = 1600, # in metres
+    walkReluctance = 5,
+    minTransferTime = 600, # in secs (allow 10 minutes)
+    cutoffSec = 900,
+    cutoffSec = 1800,
+    cutoffSec = 2700,
+    cutoffSec = 3600,
+    cutoffSec = 4500,
+    cutoffSec = 5400
+  )
+)
+```
+
+After running the code above, the OTP response will be saved to 'airport_current', and you'll see it in the Environment tab in RStudio. We now just need to convert this to text format and then save the GeoJSON to a file (this will save the file into your Project working directory):
+
+```{r save_geojson, eval=FALSE}
+
+airport_current <- content(airport_current, as = "text", encoding = "UTF-8")
+
+write(airport_current, file = "airport_current.geojson")
+
+```
+
+You can now import the GeoJSON file into QGIS, using 'the 'Add Vector Layer' and then apply a suitable style. Use the OpenLayers plugin to add a suitable basemap.
 
 ## Task 3 - automating OTP API lookups using R
+
+
+## Further resources
+
+links to API docs
+link to OTP docs
+link to OTP on Github
+link to onebuswaytransformer
+link to OSM editor
+link to GTFS editor (?)
