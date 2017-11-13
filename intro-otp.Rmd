@@ -28,13 +28,13 @@ This tutorial consists of three parts:
 
 3. And finally, you'll automate querying the OTP route planner API, looking up route information for each Lower Layer Super Output Area (LSOA) in Greater Manchester.
 
-To complete the tutorial you will need access to QGIS, RStudio and Firefox or Chrome web browser. The tutorial containes several ![](images/challenge.png) challenges, along with ![](images/hint.png) tips and ![](images/info.png) links to extra resources. It should take about two hours to complete.
+To complete the tutorial you will need access to QGIS, RStudio and Firefox or Chrome web browser. The tutorial contains several ![](images/challenge.png) challenges, along with ![](images/hint.png) tips and ![](images/info.png) links to extra resources. It should take about two hours to complete.
 
 ## Supporting materials
 
 The datasets and applications used in this tutorial are available from a GitHub repository and can be downloaded in a single zip file: [https://raw.githubusercontent.com/marcusyoung/otp-tutorial/master/materials.zip](https://raw.githubusercontent.com/marcusyoung/otp-tutorial/master/materials.zip).
 
-Once you have extracted this zip file, you should have the folders and files listed below. **Note**: the GTFS ZIP fies must not be extracted.
+Once you have extracted this zip file, you should have the folders and files listed below. **Note**: the GTFS ZIP files must not be extracted.
 
 ### /apps ###
 
@@ -89,7 +89,7 @@ Create a router called 'current', and include the GTFS and OSM files for the roa
          router-config.json
 ```
 
-`router-config.json` is acually read when the OTP server is started (in the next section), but we add it now for convenience.
+`router-config.json` is actually read when the OTP server is started (in the next section), but we add it now for convenience.
 
 With the structure created and the files in place, we can now build the graph by running OTP and specifying the `--build` option. OTP runs within a Java virtual machine (JVM), which is provided by the Java run-time environment (JRE). Before continuing, run `java -version` from the command prompt or terminal to check that you have version 1.8 of the JVM installed. If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).
 
