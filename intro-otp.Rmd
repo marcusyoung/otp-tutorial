@@ -91,7 +91,7 @@ Create a router called 'current', and include the GTFS and OSM files for the roa
 
 `router-config.json` is actually read when the OTP server is started (in the next section), but we add it now for convenience.
 
-With the structure created and the files in place, we can now build the graph by running OTP and specifying the `--build` option. OTP runs within a Java virtual machine (JVM), which is provided by the Java run-time environment (JRE). Before continuing, run `java -version` from the command prompt or terminal to check that you have version 1.8 of the JVM installed. If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).
+With the structure created and the files in place, we can now build the graph by running OTP and specifying the `--build` option. OTP runs within a Java virtual machine (JVM), which is provided by the Java run-time environment (JRE). Before continuing, run `java -version` from the command prompt or terminal to check that you have a 1.8 version of the JVM installed (the specific sub-version doesn't matter). If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).
 
 From the command prompt or terminal, change to the `otp` directory and run the following command:
 
@@ -178,7 +178,7 @@ After running the code above, the OTP response will be saved to `airport_current
 
 ```{r save_geojson, eval=FALSE}
 
-airport_current <- content(airport_current, as = "text", encoding = "UTF-8") # convert to text
+airport_current <- content(airport_current, as = "text", encoding = "UTF-8") # to text
 
 write(airport_current, file = "airport-current.geojson") # save to file
 
