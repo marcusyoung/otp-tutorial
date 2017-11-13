@@ -21,7 +21,7 @@ otpcon <-
 
 
 total <- nrow(gm_lsoa_centroids) # set number of records
-pb <- progress_bar$new(total = total, format = "(:spin) [:bar] :percent") # initiate progress bar
+pb <- progress_bar$new(total = total, format = "(:spin) [:bar] :percent") #progress bar
 
 # Begin the for loop  
 for (i in 1:total) {
@@ -36,9 +36,9 @@ for (i in 1:total) {
       detail = TRUE,
       date = '2017-07-12',
       time = '08:00am',
-      maxWalkDistance <- "1600", # allows 800m at both ends of bus journey
-      walkReluctance <- "5",
-      minTransferTime <- "600"
+      maxWalkDistance = "1600", # allows 800m at both ends of journey
+      walkReluctance = "5",
+      minTransferTime = "600"
     )
   # If response is OK update dataframe
   if (response$errorId == "OK") {

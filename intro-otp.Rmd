@@ -260,7 +260,7 @@ The second is `otpTripTime()`, which retrieves an itinerary between a specified 
       otpcon,
       from = '53.43329,-2.13357',
       to =   '53.36274,-2.27293',
-      modes = 'TRANSIT,WALK',
+      modes = 'WALK,TRANSIT',
       detail = TRUE,
       date = '2017-07-12',
       time = '08:00am',
@@ -295,9 +295,9 @@ for (i in 1:total) {
       detail = TRUE,
       date = '2017-07-12',
       time = '08:00am',
-      maxWalkDistance <- "1600", # allows 800m at both ends of bus journey
-      walkReluctance <- "5",
-      minTransferTime <- "600"
+      maxWalkDistance = "1600", # allows 800m at both ends of journey
+      walkReluctance = "5",
+      minTransferTime = "600"
     )
   # If response is OK update dataframe
   if (response$errorId == "OK") {
@@ -317,10 +317,10 @@ Once the loop is complete you can view the `gm_lsoa_centroids` dataframe, and se
 
 ```{r, engine = 'bash', eval = FALSE}
        code easting northing           latlong status duration waitingtime transfers
-1 E01005756  391223   392954 53.43329,-2.13357     OK    44.20        0.03         1
-2 E01005757  390660   391186 53.41739,-2.14199     OK    35.28        0.03         1
-3 E01005754  390870   392662 53.43066,-2.13888     OK    47.23        0.03         1
-4 E01005755  391140   391965 53.42440,-2.13479     OK    34.23        0.03         1
+1 E01005756  391223   392954 53.43329,-2.13357     OK    49.50       10.03         1
+2 E01005757  390660   391186 53.41739,-2.14199     OK    41.95        0.03         0
+3 E01005754  390870   392662 53.43066,-2.13888     OK    55.47       10.03         1
+4 E01005755  391140   391965  53.4244,-2.13479     OK    44.23       10.03         1
 ```
 
 
