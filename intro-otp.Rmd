@@ -15,20 +15,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-This tutorial is an introduction to OpenTripPLanner (OTP) - an open-source and cross-platform multi-modal route planner written in JAVA. It uses imported Open Street Map (OSM) data for routing on the street and path network and supports
+This tutorial is an introduction to OpenTripPlanner (OTP) - an open-source and cross-platform multi-modal route planner written in JAVA. It uses imported Open Street Map (OSM) data for routing on the street and path network and supports
 multi-agency public transport routing through imported GTFS feeds. It can also apply a digital elevation model to the OSM street network, allowing, for example, cycle-friendly routes to be requested. OTP has a web front-end that can be used by end-users, and a sophisticated routing API.
 
-A major advantage of running your own multi-modal route planner is the ability to carry out analysis using amended transport data. Services such as as Google Maps or TransportAPI are based on curernt public transport schedules and the existing road network. OTP enables you to modify transit schedules and/or make changes to the underlying street network. By editing alocal copy of OSM, you can model the effects of opening new roads, closing roads, or imposing other restrictions. You can also look back in time. For example, you might want to examine the effect of reductions in rural bus services on accessibility to health facilities. To do this you will need a network with bus schedules as they were *x* years ago.
+A major advantage of running your own multi-modal route planner is the ability to carry out analysis using amended transport data. Services such as as Google Maps or TransportAPI are based on current public transport schedules and the existing road network. OTP enables you to modify transit schedules and/or make changes to the underlying street network. By editing a local copy of OSM, you can model the effects of opening new roads, closing roads, or imposing other restrictions. You can also look back in time. For example, you might want to examine the effect of reductions in rural bus services on accessibility of health facilities. To do this you would need a network with bus schedules as they were in previous years.
 
 This tutorial consists of three parts:
 
-1. You'll start by building an OTP network graph for the street network and public transport services in Greater Manchester, and then launch your OTP instance and requst routes using the web interface.
+1. You'll start by building an OTP network graph for the street network and public transport services in Greater Manchester, and then launch your OTP instance and request routes using the web interface.
 
-2. Next, you'll query the OTP Isochrone API to obtain travel-time polygons, visualising the accessibility of Manchester Airport by public trasport.
+2. Next, you'll query the OTP Isochrone API to obtain travel-time polygons, visualising the accessibility of Manchester Airport by public transport.
 
-3. And finally you'll automate querying the OTP route planner API, looking up route information for each Lower Layer Super Output Area (LSOA) in Greater Manchester.
+3. And finally, you'll automate querying the OTP route planner API, looking up route information for each Lower Layer Super Output Area (LSOA) in Greater Manchester.
 
-The tutorial includes ![](images/challenge.png) challenges, ![](images/hint.png) hints and ![](images/info.png) links to extra resources.
+To complete the tutorial you will need access to QGIS, RStudio and Firefox or Chrome web browser. The tutorial containes several ![](images/challenge.png) challenges, along with ![](images/hint.png) tips and ![](images/info.png) links to extra resources. It should take about two hours to complete.
 
 ## Supporting materials
 
@@ -38,15 +38,15 @@ Once you have extracted this zip file, you should have the following folders and
 
 ### /apps ###
 
-* **otp.jar**, the OpenTripPlanner application, in a single runable JAR file. This has been compiled from a modified version of the source code with average road speeds and traversal rules that are more appropriate for the UK.
+* **otp.jar**, the OTP application, in a single runable JAR file. This has been compiled from a modified version of the source code with average road speeds and traversal rules that are appropriate for the UK.
 
 * **otp-api-fn.R**, a set of R functions that can be used to query the OTP API and process the response.
 
 ### /data ###
 
-* **router-config.json**, a configuration for OTP.
+* **router-config.json**, a configuration file for OTP (sets left hand drive).
 
-* **greater-manchester-osm.pbf**, an extract from OpenStreetMap (OSM) covering the Greater Manchester area, obtained from: [http://download.geofabrik.de/europe/great-britain/england/greater-manchester.html](http://download.geofabrik.de/europe/great-britain/england/greater-manchester.html).
+* **greater-manchester-osm.pbf**, an extract from OSM covering the Greater Manchester area, obtained from: [http://download.geofabrik.de/europe/great-britain/england/greater-manchester.html](http://download.geofabrik.de/europe/great-britain/england/greater-manchester.html).
 
 * **rail-gtfs.zip**, a GTFS feed for UK national rail services, limited to operators that provide services in the Greater Manchester area. Based on a full feed (dated 26/06/17) obtained from: [http://transitfeeds.com/p/association-of-train-operating-companies/284](http://transitfeeds.com/p/association-of-train-operating-companies/284).
 
@@ -55,7 +55,7 @@ Once you have extracted this zip file, you should have the following folders and
 
 * **aircoach-gtfs.zip**, a GTFS feed for a fictional coach link service between Wigan and Manchester Airport.
 
-* **gm-lsoa-polygons.\***, a Shapefile containing polygons for the 1,740 Lower Layer Super Output Areas (LSOA) that cover the Greater Manchester area.
+* **gm-lsoa-polygons.\***, a Shapefile containing polygons for the 1,740 LSOAs that cover the Greater Manchester area.
 
 * **gm-lsoa-centroids.csv**, a CSV file containing attributes and centroid coordinates for the Greater Manchester LSOAs. 
 
@@ -72,9 +72,9 @@ Once you have extracted this zip file, you should have the following folders and
 
 ### Building an OTP Graph
 
-An OTP graph specifies every location in the region covered and how to travel between them, and is compiled by OTP using OSM data for the street and path network (used for walk, bicycle and drive modes) and GTFS data for transit scheduling. It can also incorporate a digital terrain model (in GeoTIFF format) which is 'draped' over the street network and can be used in routing - for example to request a flatter cycling route.
+An OTP graph specifies every location in the region covered and how to travel between them, and is compiled by OTP using OSM data for the street and path network (used for walk, bicycle and drive modes) and GTFS data for transit scheduling.
 
-Our first task is to create the folder and file structure expected by OTP. This is a base directory called `otp` which contains the OTP JAR file, and a sub-directory called `graphs`. Directories created under `graphs` are known as OTP routers, and contain all the files required to build a graph. A single OTP instance can host several routers - for example covering different regions. 
+Our first task is to create the folder and file structure expected by OTP. This is a base directory called `otp` which contains the OTP JAR file, and a sub-directory called `graphs`. Directories created under `graphs` are known as OTP routers, and contain all the files required to build a graph. A single OTP instance can host several routers, for example covering different regions. 
 
 Create a router called 'current', and include the GTFS and OSM files for the road network and current transit schedules for Greater Manchester, along with `router-config.json`, as shown below:   
 
@@ -89,7 +89,9 @@ Create a router called 'current', and include the GTFS and OSM files for the roa
          router-config.json
 ```
 
-With the structure created and the files in place, we can now build the graph by running OTP and specifying the `--build` option. OTP runs within a Java virtual machine (JVM), which is provided by the Java run-time environment (JRE). Before continuing, run `java -version` from the command prompt or terminal to check that you have version 1.8 of the JVM installed. If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html])
+`router-config.json` is acually read when the OTP server is started (in the next section), but we add it now for convenience.
+
+With the structure created and the files in place, we can now build the graph by running OTP and specifying the `--build` option. OTP runs within a Java virtual machine (JVM), which is provided by the Java run-time environment (JRE). Before continuing, run `java -version` from the command prompt or terminal to check that you have version 1.8 of the JVM installed. If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).
 
 From the command prompt or terminal, change to the `otp` directory and run the following command:
 
@@ -99,12 +101,12 @@ java -Xmx2G -jar otp.jar --build graphs/current
 
 The java option `-Xmx2G` allocates up to 2GB of RAM to the JVM. If you do not have this much free RAM available OTP will likely fail during the build process. The `--build` option tells OTP that we want to build a graph, and `graphs/current` is the path to the router directory (in this case 'current').
 
-The build process should take 2-3 minutes to complete. Don't worry about the errors that flash up during this process These mostly relate to railway stations that are located outside of the Greater Manchester area, where there is no road network to link them to. Once complete, you will see a file called `Graph.obj` in the `current` directory.
+The build process should take 2-3 minutes to complete. Don't worry about the errors that flash up during this process. These mostly relate to railway stations that are located outside of the Greater Manchester area, where there is no road network to link them to. Once complete, you should see a file called `Graph.obj` in the `current` directory.
 
 
 ### Starting up OTP server
 
-The next step is to start up your OTP server, running the router called `current'. OTP will load the graph you created into memory and you will then be able to plan multi-modal routes using the web interface. From the `otp` directory, run the following command:
+The next step is to start up your OTP server, running the router called 'current'. OTP will load the graph you created into memory and you will then be able to plan multi-modal routes using the web interface. From the `otp` directory, run the following command:
 
 ```{r, engine = 'bash', eval = FALSE}
 java -Xmx2G -jar otp.jar --router current --graphs graphs --server
@@ -116,9 +118,9 @@ java -Xmx2G -jar otp.jar --router current --graphs graphs --server
 java -Xmx2G -jar otp.jar --router current --graphs graphs --server --port 8888
 ```
 
-It should only take a minute or two for OTP to load the graph and start the Grizzly server. If all has worked you should now see the message: `Grizzly server running`. You must leave the command prompt/terminal window open. If you close it, the server will stop running. You can stop the server without closing the window by entering `Ctrl-C`.
+It should only take a minute or two for OTP to load the graph and start the Grizzly server. If all has worked you should see the message: `Grizzly server running`. You must leave the command prompt/terminal window open. If you close it, the server will stop running. You can stop the server without closing the window by entering `Ctrl-C`.
 
-You can now access the web interface using the URL: [http://localhost:8080](http://localhost:8080). Note: The web interface does not work correctly in Internet Explorer - use Firefox or Chrome. You can now zoom into the Manchester area and request a route by setting an origin and a destination directly on the map (by right clicking your mouse) and you can specify travel dates, times and modes using the 'Trip Options' window (see Figure \ref{fig:otpgui}). You can change the background map from the layer stack icon at the top right.
+You can now access the web interface using the URL: [http://localhost:8080](http://localhost:8080). **Note:** The web interface does not work correctly in Internet Explorer - use Firefox or Chrome. You can now zoom into the Manchester area and request a route by setting an origin and a destination directly on the map (by right clicking your mouse) and you can specify travel dates, times and modes using the 'Trip Options' window (see Figure \ref{fig:otpgui}). You can change the background map from the layer stack icon at the top right.
 
 ```{r, out.width = "11cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpgui}OTP Web GUI"}
 knitr::include_graphics("images/otpwebgui.png")
@@ -128,7 +130,7 @@ Congratulations, you now have your own multi-modal router planner!
 
 ## Extras (if you have time)
 
-For troubleshooting routing issues, you can visualise the traversal permissions of street edges, the bike safety of edges, and how transit stops are linked to streets. For these additional debug layers to be available, add `?debug_layers=true` to the URL, like this:  [http://localhost:8080?debug_layers=true](http://localhost:8080?debug_layers=true). The extra layers will be listed in the layer stack menu. Figure \ref{fig:otpdebug} shows the Bike Safety layer (green signifies most safe, red the least safe).
+For troubleshooting routing issues, you can visualise the traversal permissions of street edges, the bike safety of edges, and how transit stops are linked to streets. For these additional debug layers to be available, add `?debug_layers=true` to the URL, like this:  [http://localhost:8080?debug_layers=true](http://localhost:8080?debug_layers=true). The extra layers will be listed in the layer stack menu. Figure \ref{fig:otpdebug} shows the Bike Safety layer (green signifies most safe, red the least safe). If you zoom in to the street edges you'll see the cost weightings that are applied.
 
 ![](images/info.png) You can read more about the different debug layers in the official OTP documentation: [http://docs.opentripplanner.org/en/latest/Troubleshooting-Routing/#debug-layers](http://docs.opentripplanner.org/en/latest/Troubleshooting-Routing/#debug-layers). 
 
@@ -147,7 +149,7 @@ To send the query to OTP, you could use a web browser and submit a long URL, som
 
 OTP will then return the isochrone polygons in GeoJSON format, which can be downloaded and imported into a GIS.
 
-A long URL like this will soon get confusing and prone to errors, so we'll use R to construct the URL, submit it to the OTP API, and save the returned GeoJSON. To do this, we can use the `GET()` method from the `httr` package. The code you need is shown below. We provide the `GET()` with the base URL to access the isochrone resource of the router called 'current' and then specify the query parameters to appended to the URL. The code below will submit exactly the same URL as the one shown above, but it's much easier to see the parameters and amend their values:
+A long URL like this will soon get confusing and prone to errors, so instead we'll use R to construct the URL, submit it to the OTP API, and save the returned GeoJSON. To do this, we'll use the `GET()` method from the `httr` package. The code you need is shown below. We provide `GET()` with the base URL to access the isochrone resource of the router called 'current' and specify the query parameters to append to the URL. This code will submit exactly the same URL as the one shown above, but it's much easier to see the parameters and amend their values:
 
 ```{r isochrone_current, eval=FALSE}
 
@@ -172,13 +174,13 @@ airport_current <- GET(
 )
 ```
 
-After running the code above, the OTP response will be saved to 'airport_current', and you'll see it in the 'Environment' tab in RStudio. We now need to convert this into text format and save the GeoJSON to a file:
+After running the code above, the OTP response will be saved to `airport_current`, and you'll see it in the 'Environment' tab in RStudio. We now need to convert this into text format and then save the GeoJSON to a file:
 
 ```{r save_geojson, eval=FALSE}
 
-airport_current <- content(airport_current, as = "text", encoding = "UTF-8")
+airport_current <- content(airport_current, as = "text", encoding = "UTF-8") # convert to text
 
-write(airport_current, file = "airport-current.geojson")
+write(airport_current, file = "airport-current.geojson") # save to file
 
 ```
 
@@ -204,19 +206,30 @@ knitr::include_graphics("images/airport-isochrone-new.png")
 
 ## Part 3 - automating OTP API lookups using R (40 mins)
 
-In this final part of the tutorial, we are going to automate querying the OTP API to generate large quantities of route data - potentially for many thousands of origin:destination pairs. In this example, we will gather data on accessing Manchester Airport using public transport for each of the Lower Super Output Areas (LSOAs) in Greater Manchester.
+In this final part of the tutorial, we are going to automate querying the OTP API to generate large quantities of route data - potentially for many thousands of origin:destination pairs. In this example, we will gather data on accessing Manchester Airport using public transport for each of LSOAs in Greater Manchester.
 
 We'll start by importing the CSV file `gm-lsoa-centroids.csv` into an R dataframe using `read.csv()`:
 
 ```{r load lsao, eval=TRUE}
 
 # Import the LSOA CSV file
-gm_lsoa_centroids <- read.csv("materials/data/gm-lsoa-centroids.csv", stringsAsFactors = FALSE)
+gm_lsoa_centroids <- read.csv("materials/data/gm-lsoa-centroids.csv",
+                              stringsAsFactors = FALSE)
 
 
 ```
 
-We next need to load some R functions that can query the Planner resource of the OTP API and parse the XML response. These functions are not yet part of an R package, so we just read the file, `fn_otp_api.R`, using `source()`:
+Use the `head()` function to take a look at the first few rows:
+
+```{r head lsao, eval=TRUE, echo=TRUE}
+
+head(gm_lsoa_centroids)
+
+```
+
+In addition to LSAO centroid coordinates in Eastings and Northings (British National Grid), they are also provided as latitude/longitude, in the format required by OTP.
+
+We next need to load some R functions that can query the Planner resource of the OTP API and parse the XML response. These functions are not yet part of an R package, so we just read the file, `otp-api-fn.R`, using `source()`:
 
 ```{r load functions, eval=TRUE, message=FALSE}
 
@@ -259,7 +272,7 @@ The second is `otpTripTime()`, which retrieves an itinerary between a specified 
 
 A list is returned. The first item in the list contains the errorId, and the second is a dataframe, containing the start and end date/time, journey duration (minutes), time spent walking, time on public transport, waiting time, and number of transfers.
 
-To obtain and store this information for every LSOA centroid, we can use a R for loop. The code below deals with each row in `gm_lsoa_centroids` in turn. For each LSOA a query is submitted to OTP and the trip attributes returned are stored in separate columns in the `gm_lsoa_centroids` dataframe. As this loop will take a few minutes to complete, a progress indicator is included. This will display in the R console. It requires the `progress` package to be installed and loaded:
+To obtain and store this information for every LSOA centroid, we can use an R loop. The code below deals with each row in `gm_lsoa_centroids` in turn. For each LSOA a query is submitted to OTP and the trip attributes returned are stored in separate columns in the `gm_lsoa_centroids` dataframe. As this loop will take a few minutes to complete, a progress indicator is included. This will display in the R console, and requires the `progress` package to be installed and loaded.
 
 ```{r loop query api, eval=FALSE}
 
@@ -267,7 +280,7 @@ install.packages("progress")
 library(progress)
 
 total <- nrow(gm_lsoa_centroids) # set number of records
-pb <- progress_bar$new(total = total, format = "(:spin) [:bar] :percent") #progress bar
+pb <- progress_bar$new(total = total, format = "(:spin)[:bar]:percent") #progress bar
 
 # Begin the loop  
 for (i in 1:total) {
@@ -299,7 +312,7 @@ for (i in 1:total) {
 }
 ```
 
-Once the loop is complete you can view the `gm_lsoa_centroids` dataframe, and see the populated data. Here are the first few rows:
+Once the loop is complete you can view the `gm_lsoa_centroids` dataframe, and see the populated data. Here are the first few rows (name column removed for clarity):
 
 
 ```{r, engine = 'bash', eval = FALSE}
@@ -321,10 +334,13 @@ You should end up with something similar to Figure \ref{fig:lsoa-transfers}.
 knitr::include_graphics("images/lsoa-transfers.png")
 ```
 
+
+That's the end of this introductory tutorial. Don't worry if you didn't manage to complete all the challenges in the time available, as you can complete them in your own time. All the resources will remain available on the GitHub repository: [https://github.com/marcusyoung/otp-tutorial](https://github.com/marcusyoung/otp-tutorial). To find out more about OTP and tools to process GTFS and OSM data, take a look at the 'Additional Resources' below. 
+
 ## Additional resources
 
-* The official project documentation for OTP: [http://docs.opentripplanner.org/en/latest/](http://docs.opentripplanner.org/en/latest/)
-* The OTP project on GITHUB: [https://github.com/opentripplanner/OpenTripPlanner](https://github.com/opentripplanner/OpenTripPlanner)
-* OTP API documentation for Planner resource: [http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html](http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html)
-* onebusaway-gtfs-transformer-cli - a useful command-line application for transforming GTFS feeds: [http://developer.onebusaway.org/modules/onebusaway-gtfs-modules/1.3.3/onebusaway-gtfs-transformer-cli.html](http://developer.onebusaway.org/modules/onebusaway-gtfs-modules/1.3.3/onebusaway-gtfs-transformer-cli.html)
-* JOSM - application for editing local copies of OSM data: [https://josm.openstreetmap.de/](https://josm.openstreetmap.de/).
+* **The official project documentation for OTP**: [http://docs.opentripplanner.org/en/latest/](http://docs.opentripplanner.org/en/latest/)
+* **The OTP project on GitHub**: [https://github.com/opentripplanner/OpenTripPlanner](https://github.com/opentripplanner/OpenTripPlanner)
+* **OTP API documentation for the Planner resource**: [http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html](http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html)
+* **onebusaway-gtfs-transformer-cli, a useful command-line application for transforming GTFS feeds**: [http://developer.onebusaway.org/modules/onebusaway-gtfs-modules/1.3.3/onebusaway-gtfs-transformer-cli.html](http://developer.onebusaway.org/modules/onebusaway-gtfs-modules/1.3.3/onebusaway-gtfs-transformer-cli.html)
+* **JOSM, an application for editing local copies of OSM data**: [https://josm.openstreetmap.de/](https://josm.openstreetmap.de/).
