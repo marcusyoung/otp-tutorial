@@ -32,9 +32,9 @@ To complete the tutorial you will need access to QGIS, RStudio and Firefox or Ch
 
 ## Supporting materials
 
-The datasets and applications used in this tutorial are available from a GitHub repository and can be downloaded in a single zip file: [https://github.com/marcusyoung/otp-tutorial/materials.zip](https://github.com/marcusyoung/otp-tutorial/materials.zip).
+The datasets and applications used in this tutorial are available from a GitHub repository and can be downloaded in a single zip file: [https://raw.githubusercontent.com/marcusyoung/otp-tutorial/master/materials.zip](https://raw.githubusercontent.com/marcusyoung/otp-tutorial/master/materials.zip).
 
-Once you have extracted this zip file, you should have the following folders and files:
+Once you have extracted this zip file, you should have the folders and files listed below. **Note**: the GTFS ZIP fies must not be extracted.
 
 ### /apps ###
 
