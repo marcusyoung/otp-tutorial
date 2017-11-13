@@ -206,7 +206,7 @@ knitr::include_graphics("images/airport-isochrone-new.png")
 
 ## Part 3 - automating OTP API lookups using R (40 mins)
 
-In this final part of the tutorial, we are going to automate querying the OTP API to generate large quantities of route data - potentially for many thousands of origin:destination pairs. In this example, we will gather data on accessing Manchester Airport using public transport for each of LSOAs in Greater Manchester.
+In this final part of the tutorial, we are going to automate querying the OTP API to generate large quantities of route data - potentially for many thousands of origin:destination pairs. In this example, we will gather data on accessing Manchester Airport using public transport for each of the LSOAs in Greater Manchester.
 
 We'll start by importing the CSV file `gm-lsoa-centroids.csv` into an R dataframe using `read.csv()`:
 
