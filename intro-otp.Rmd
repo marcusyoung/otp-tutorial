@@ -210,7 +210,7 @@ In this final part of the tutorial, we are going to automate querying the OTP AP
 
 We'll start by importing the CSV file `gm-lsoa-centroids.csv` into an R dataframe using `read.csv()`:
 
-```{r load lsao, eval=TRUE}
+```{r load lsao, eval=FALSE}
 
 # Import the LSOA CSV file
 gm_lsoa_centroids <- read.csv("materials/data/gm-lsoa-centroids.csv",
@@ -221,17 +221,27 @@ gm_lsoa_centroids <- read.csv("materials/data/gm-lsoa-centroids.csv",
 
 Use the `head()` function to take a look at the first few rows:
 
-```{r head lsao, eval=TRUE, echo=TRUE}
+```{r head lsao, eval=FALSE, echo=TRUE}
 
 head(gm_lsoa_centroids)
 
 ```
 
-In addition to LSAO centroid coordinates in Eastings and Northings (British National Grid), they are also provided as latitude/longitude, in the format required by OTP.
+```{r, engine = 'bash', eval = FALSE}
+       code           name easting northing           latlong
+1 E01005756 Stockport 004D  391223   392954 53.43329,-2.13357
+2 E01005757 Stockport 014A  390660   391186 53.41739,-2.14199
+3 E01005754 Stockport 004B  390870   392662 53.43066,-2.13888
+4 E01005755 Stockport 004C  391140   391965  53.4244,-2.13479
+5 E01005752 Stockport 012A  393251   391229   53.41782,-2.103
+6 E01005753 Stockport 004A  391339   392429 53.42858,-2.13181
+```
+
+In addition to the LSOA centroid coordinates in Eastings and Northings (British National Grid), they are also provided as latitude/longitude, in the format required by OTP.
 
 We next need to load some R functions that can query the Planner resource of the OTP API and parse the XML response. These functions are not yet part of an R package, so we just read the file, `otp-api-fn.R`, using `source()`:
 
-```{r load functions, eval=TRUE, message=FALSE}
+```{r load functions, eval=FALSE, message=FALSE}
 
 # Load the OTP API functions
 source("materials/apps/otp-api-fn.R")
@@ -240,7 +250,7 @@ source("materials/apps/otp-api-fn.R")
 
 We are going to use two functions. The first is `otpConnect()`, which defines the OTP instance and router we want to query:     
 
-```{r otpconnect, eval=TRUE}
+```{r otpconnect, eval=FALSE}
 
 # Call otpConnect() to define a connection called otpcon
 otpcon <-
@@ -254,7 +264,7 @@ otpcon <-
 
 The second is `otpTripTime()`, which retrieves an itinerary between a specified origin and destination. Try the example below, which uses the first LSOA in `gm_lsoa_centroids`, which has origin coordinates '53.43329,-2.13357':
 
-```{r otptriptime, eval=TRUE}
+```{r otptriptime, eval=FALSE}
 # Call otpTripTime to get attributes of an itinerary
    otpTripTime(
       otpcon,
@@ -268,6 +278,17 @@ The second is `otpTripTime()`, which retrieves an itinerary between a specified 
       walkReluctance = '5',
       minTransferTime = '600'
     )
+```
+
+```{r, engine = 'bash', eval = FALSE}
+$errorId
+[1] "OK"
+
+ $itineraries
+                 start                 end duration  walkTime  transitTime
+ 1 2017-07-12 08:16:23 2017-07-12 09:05:53     49.5      5.47           34
+   waitingTime  transfers
+ 1       10.03          1
 ```
 
 A list is returned. The first item in the list contains the errorId, and the second is a dataframe, containing the start and end date/time, journey duration (minutes), time spent walking, time on public transport, waiting time, and number of transfers.
@@ -316,11 +337,11 @@ Once the loop is complete you can view the `gm_lsoa_centroids` dataframe, and se
 
 
 ```{r, engine = 'bash', eval = FALSE}
-       code easting northing           latlong status duration waitingtime transfers
-1 E01005756  391223   392954 53.43329,-2.13357     OK    49.50       10.03         1
-2 E01005757  390660   391186 53.41739,-2.14199     OK    41.95        0.03         0
-3 E01005754  390870   392662 53.43066,-2.13888     OK    55.47       10.03         1
-4 E01005755  391140   391965  53.4244,-2.13479     OK    44.23       10.03         1
+       code  easting  northing           latlong status duration waitingtime transfers
+1 E01005756  391223     392954 53.43329,-2.13357     OK    49.50       10.03         1
+2 E01005757  390660     391186 53.41739,-2.14199     OK    41.95        0.03         0
+3 E01005754  390870     392662 53.43066,-2.13888     OK    55.47       10.03         1
+4 E01005755  391140     391965  53.4244,-2.13479     OK    44.23       10.03         1
 ```
 
 
