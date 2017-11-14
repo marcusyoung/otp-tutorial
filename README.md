@@ -15,4 +15,4 @@ of Manchester Airport by public transport.
 3. And finally, you’ll automate querying the OTP route planner API, looking up route information for
 each Lower Layer Super Output Area (LSOA) in Greater Manchester.
 
-![](/images/airport-isochrone.png)
+![](/images/airport-isochrone-readme.png)
