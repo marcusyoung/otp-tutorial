@@ -96,7 +96,7 @@ With the structure created and the files in place, we can now build the graph by
 From the command prompt or terminal, change to the `otp` directory and run the following command:
 
 ```{r, engine = 'bash', eval = FALSE}
-java -Xmx2G -jar otp.jar --build graphs/current
+java -Xmx2G -jar materials/apps/otp.jar --build materials/data
 ```
 
 The java option `-Xmx2G` allocates up to 2GB of RAM to the JVM. If you do not have this much free RAM available OTP will likely fail during the build process. The `--build` option tells OTP that we want to build a graph, and `graphs/current` is the path to the router directory (in this case 'current').
@@ -109,7 +109,7 @@ The build process should take 2-3 minutes to complete. Don't worry about the err
 The next step is to start up your OTP server, running the router called 'current'. OTP will load the graph you created into memory and you will then be able to plan multi-modal routes using the web interface. From the `otp` directory, run the following command:
 
 ```{r, engine = 'bash', eval = FALSE}
-java -Xmx2G -jar otp.jar --router current --graphs graphs --server
+java -Xmx2G -jar materials/apps/otp.jar --router data --graphs materials --server
 ```
 
 `--router` specifies the name of the router we want to use (this can be repeated if you want a single instance of OTP to run multiple routers); `--graphs` specifies the graph directory (relative to current directory or a full path); and `--server` indicates that we want to launch OTP in server mode (rather than the build mode we used earlier). OTP has a built-in web server called Grizzly which runs on port 8080. If you have another application running on your computer that uses this port then you will need specify an alternative port using the `--port` option, for example:
