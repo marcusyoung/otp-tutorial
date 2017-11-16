@@ -113,11 +113,11 @@ The next step is to start up your OTP server, running the router called 'current
 java -Xmx2G -jar otp.jar --router current --graphs graphs --server
 ```
 
-`--router` specifies the name of the router we want to use (this can be repeated if you want a single instance of OTP to run multiple routers); `--graphs` specifies the graph directory (relative to current directory or a full path); and `--server` indicates that we want to launch OTP in server mode (rather than the build mode we used earlier). OTP has a built-in web server called Grizzly which runs on port 8080 (http) and 8081 (https). If you have another application running on your computer that uses these ports then you will need specify alternative ports using the `--port` and `--securePort` options, for example:
+`--router` specifies the name of the router we want to use (this can be repeated if you want a single instance of OTP to run multiple routers); `--graphs` specifies the graph directory (relative to current directory or a full path); and `--server` indicates that we want to launch OTP in server mode (rather than the build mode we used earlier). OTP has a built-in web server called Grizzly which runs on port 8080 (http) and 8081 (https). If you have another application running on your computer that uses these ports then you will need to specify alternative ports using the `--port` and `--securePort` options, for example:
 
 ```{r, engine = 'bash', eval = FALSE}
 java -Xmx2G -jar otp.jar --router current --graphs graphs --server --port 8801 
-  --securePort 8802
+--securePort 8802
 ```
 
 It should only take a minute or two for OTP to load the graph and start the Grizzly server. If all has worked you should see the message: `Grizzly server running`. You must leave the command prompt/terminal window open. If you close it, the server will stop running. You can stop the server without closing the window by entering `Ctrl-C`.
