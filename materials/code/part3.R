@@ -34,7 +34,7 @@ for (i in 1:total) {
       to = '53.36274,-2.27293',
       modes = 'WALK,TRANSIT',
       detail = TRUE,
-      date = '2017-07-12',
+      date = '2018-11-12',
       time = '08:00am',
       maxWalkDistance = "1600", # allows 800m at both ends of journey
       walkReluctance = "5",
@@ -51,3 +51,6 @@ for (i in 1:total) {
     gm_lsoa_centroids[i, "status"] <- response$errorId
   }
 }
+
+# Export gm_lsoa_centroids df
+write.csv(gm_lsoa_centroids, file="materials/gm_lsoa_centroids.csv")

@@ -17,7 +17,7 @@ each Lower Layer Super Output Area (LSOA) in Greater Manchester.
 
 Note: Currently OTP requires Java 8. This tutorial will not work with Java 9 or 10.
 
-Note: The GTSF feeds provided in this tutorial for the Greater Manchester area were obtained in October 2017. You will need to take this into account when querying OTP otherwise you will not get any transit routes returned. Ensure that you request a route plan for the period covered by the GTFS feeds (probably best to query a date in November 2017).
+Note: The GTSF feeds provided in this tutorial for the Greater Manchester area were obtained in November 2018. You will need to take this into account when querying OTP otherwise you may not get any transit routes returned. Ensure that you request a route plan for the period covered by the GTFS feeds.
 
 ![](/images/airport-isochrone-readme.png)
 
