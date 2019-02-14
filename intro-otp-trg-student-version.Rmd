@@ -150,7 +150,7 @@ Now that we have a working instance of OTP, we'll use it to generate some travel
 
 To send the query to OTP, you could use a web browser and submit a long URL, something like this:
 
-[http://localhost:8080/otp/routers/current/isochrone?fromPlace=53.3627432,-2.2729342&mode=WALK,TRANSIT&date=11-12-2018&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400](http://localhost:8080/otp/routers/current/isochrone?fromPlace=53.3627432,-2.2729342&mode=WALK,TRANSIT&date=11-12-2018&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400)
+[http://localhost:8080/otp/routers/current/isochrone?toPlace=53.3627432,-2.2729342&fromPlace=53.3627432,-2.2729342&arriveBy=TRUE&mode=WALK,TRANSIT&date=11-12-2018&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400](http://localhost:8080/otp/routers/current/isochrone?toPlace=53.3627432,-2.2729342&fromPlace=53.3627432,-2.2729342&arriveBy=TRUE&mode=WALK,TRANSIT&date=11-12-2018&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400)
 
 OTP will then return the isochrone polygons. Depending on the browser you are using (and how it makes the request) the polygons will be returned in either GeoJSON format or as a zipped shapefile, which can then be downloaded and imported into a GIS.
 
@@ -166,7 +166,9 @@ library(httr)
 airport_current <- GET(
   "http://localhost:8080/otp/routers/current/isochrone",
   query = list(
+    toPlace = "53.3627432,-2.2729342", # latlong of Manchester Airport
     fromPlace = "53.3627432,-2.2729342", # latlong of Manchester Airport
+    arriveBy = TRUE,
     mode = "WALK,TRANSIT", # modes we want the route planner to use
     date = "11-12-2018",
     time= "08:00am",
@@ -182,6 +184,8 @@ airport_current <- GET(
   )
 )
 ```
+
+You will notice that both `toPlace` and `fromPlace` parameters are set in this example. This is due to a bug in OTP. The `toPlace` and `fromPlace` parameters control the direction of the isochrone, whether it is towards or away from the location. If `fromPlace` is provided then we are requesting an isochrone that is away from the location (where can we reach *from* the location within the specified cutoff). If `toPlace` is provided then we are requesting an isochrone that is towards the location (from where can we get *to* the location within the specified cutoff). Due to a bug in OTP, if you require an isochrone that is towards the location you still need to provide the `fromPlace` parameter (it will be ignored if `toPlace` is also provided). To avoid confusion, you may want to set it the same as `toPlace`. Also, if requesting an isochrone towards the location you may want to set `arriveBy = TRUE`, to indicate that the `time` parameter is the desired arrival time at the location (you can still leave this at the default of `FALSE` if you want `time` to represent the desired departure time).
 
 After running the code above, the OTP response will be saved to `airport_current`, and you'll see it in the 'Environment' tab in RStudio. We now need to convert this into text format and then save the GeoJSON to a file:
 
