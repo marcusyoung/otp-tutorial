@@ -3,6 +3,8 @@
 
 This is an introductory tutorial (approx. 2 hours) covering the setup and querying of an OpenTripPlanner instance.
 
+[Tutorial in PDF format](https://github.com/marcusyoung/otp-tutorial/blob/master/intro-otp.pdf)
+
 The tutorial consists of three parts:
 
 1. You’ll start by building an OTP network graph for the street network and public transport services
