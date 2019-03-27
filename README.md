@@ -1,7 +1,7 @@
 # OpenTripPlanner Tutorial - creating and querying your own multi-modal route planner
 
 
-This is an introductory tutorial (approx. 2 hours) covering the setup and querying of an OpenTripPlanner instance.
+This is an introductory tutorial (approx. 2-3 hours) covering the setup and querying of an OpenTripPlanner instance.
 
 [Tutorial in PDF format](https://github.com/marcusyoung/otp-tutorial/blob/master/intro-otp.pdf)
 
