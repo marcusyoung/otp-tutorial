@@ -2,7 +2,7 @@
 title: "OpenTripPlanner - creating and querying your own multi-modal route planner"
 subtitle: "CENV6001 Transportation Planning: Practice - Transport Planning & GIS: Practical Session"
 author: "Marcus Young"
-date: "14 February 2019"
+date: "27 March 2019"
 output:
   pdf_document: 
     fig_caption: yes
@@ -42,8 +42,6 @@ Extract this zip file to `C:\users\yourusername`. You should have the folders an
 ### /apps ###
 
 * **otp.jar**, the OTP application, in a single runable JAR file. This has been compiled from a modified version of the source code with average road speeds and traversal rules that are appropriate for the UK.
-
-* **otp-api-fn.R**, a set of R functions that can be used to query the OTP API and process the response.
 
 ### /data ###
 
@@ -254,62 +252,81 @@ head(gm_lsoa_centroids)
 6 E01005753 Stockport 004A  391339   392429 53.42858,-2.13181
 ```
 
-In addition to the LSOA centroid coordinates in Eastings and Northings (British National Grid), they are also provided as latitude/longitude, in the format required by OTP.
+In addition to the LSOA centroid coordinates in Eastings and Northings (British National Grid), they are also provided in latitude and longitude (as required by OTP).
 
-We next need to load some R functions that can query the Planner resource of the OTP API and parse the XML response. These functions are not yet part of an R package, so we just read the file, `otp-api-fn.R`, using `source()`:
+We next need to install and load an R package called otpr that can query the planner resource of the OTP API and parse the XML response:
 
 ```{r load functions, eval=FALSE, message=FALSE}
 
-# Load the OTP API functions
-source("materials/apps/otp-api-fn.R")
+# Install devtools package first
+install.packages("devtools")
+
+# Now install the otpr package from GitHub
+devtools::install_github("marcusyoung/otpr")
+
+# Now load the package
+library(otpr)
+
 
 ```
 
-We are going to use two functions. The first is `otpConnect()`, which defines the OTP instance and router we want to query:     
+![](images/info.png) *You find out more about the otpr package at its GitHub repository: [https://github.com/marcusyoung/otpr](https://github.com/marcusyoung/otpr).* 
+
+We are going to use two functions from the package. The first is `otp_connect()`, which defines the OTP instance and router we want to query:
 
 ```{r otpconnect, eval=FALSE}
 
 # Call otpConnect() to define a connection called otpcon
 otpcon <-
-  otpConnect(
+  otp_connect(
     hostname = "localhost",
     router = "current",
-    port = "8080",
-    ssl = "false"
+    port = 8080,
+    ssl = FALSE
   )
-```
 
-The second is `otpTripTime()`, which retrieves an itinerary between a specified origin and destination. Try the example below, which uses the first LSOA in `gm_lsoa_centroids`, which has origin coordinates '53.43329,-2.13357':
-
-```{r otptriptime, eval=FALSE}
-
-# Call otpTripTime to get attributes of an itinerary
-   otpTripTime(
-      otpcon,
-      from = '53.43329,-2.13357',
-      to =   '53.36274,-2.27293',
-      modes = 'WALK,TRANSIT',
-      detail = TRUE,
-      date = '2018-11-12',
-      time = '08:00am',
-      maxWalkDistance = '1600',
-      walkReluctance = '5',
-      minTransferTime = '600'
-    )
+# As most of the default values of the function arguments are fine for us, we
+# could also use:
+# otpcon <- otp_connect(router = "current")
 
 ```
+
+If your OTP instance is running then you should get confirmation that the router "current" exists, as shown below:
 
 ```{r, engine = 'bash', eval = FALSE}
 
+Router http://localhost:8080/otp/routers/current exists
+
+```
+
+The second function we will use is `otp_get_times()`, which retrieves an itinerary between a specified origin and destination. Try the example below, which uses the first LSOA in `gm_lsoa_centroids`, which has origin coordinates c(53.43329,-2.13357):
+
+```{r otp_get_times, eval=FALSE}
+# Call otp_get_times to get attributes of an itinerary
+   otp_get_times(
+      otpcon,
+      fromPlace = c(53.43329,-2.13357),
+      toPlace =   c(53.36274,-2.27293),
+      mode = 'TRANSIT',
+      detail = TRUE,
+      date = '11-25-2018',
+      time = '08:00:00',
+      maxWalkDistance = 1600,
+      walkReluctance = 5,
+      minTransferTime = 600
+    )
+```
+
+```{r, engine = 'bash', eval = FALSE}
 $errorId
 [1] "OK"
 
  $itineraries
-                 start                 end duration  walkTime  transitTime
- 1 2018-11-12 08:15:23 2018-11-12 09:06:53     51.5      5.47           36
+   start               end                  duration walkTime  transitTime
+ 1 2018-11-25 08:22:23 2018-11-25 09:31:53  69.5     5.47      30
    waitingTime  transfers
- 1       10.03          1
- 
+   10.03          1
+   
 ```
 
 A list is returned. The first item in the list contains the errorId, and the second is a dataframe, containing the start and end date/time, journey duration (minutes), time spent walking, time on public transport, waiting time, and number of transfers.
@@ -327,19 +344,18 @@ pb <- progress_bar$new(total = total, format = "(:spin)[:bar]:percent") #progres
 # Begin the loop  
 for (i in 1:total) {
   pb$tick()   # update progress bar
-
   response <-
-    otpTripTime(
+    otp_get_times(
       otpcon,
-      from = gm_lsoa_centroids[i, ]$latlong,
-      to = '53.36274,-2.27293',
-      modes = 'WALK,TRANSIT',
+      fromPlace = c(gm_lsoa_centroids[i, ]$latitude, gm_lsoa_centroids[i, ]$longitude),
+      toPlace =  c(53.36274,-2.27293),
+      mode = 'TRANSIT',
       detail = TRUE,
-      date = '2018-11-12',
-      time = '08:00am',
-      maxWalkDistance = "1600", # allows 800m at both ends of journey
-      walkReluctance = "5",
-      minTransferTime = "600"
+      date = '11-26-2018',
+      time = '08:00:00',
+      maxWalkDistance = 1600, # allows 800m at both ends of journey
+      walkReluctance = 5,
+      minTransferTime = 600
     )
   # If response is OK update dataframe
   if (response$errorId == "OK") {
@@ -358,13 +374,13 @@ Once the loop is complete you can view the `gm_lsoa_centroids` dataframe, and se
 
 
 ```{r, engine = 'bash', eval = FALSE}
-       code  easting  northing           latlong status duration waitingtime transfers
-1 E01005756  391223     392954 53.43329,-2.13357     OK    51.50       10.03         1
-2 E01005757  390660     391186 53.41739,-2.14199     OK    42.95        0.03         0
-3 E01005754  390870     392662 53.43066,-2.13888     OK    56.47       10.03         1
-4 E01005755  391140     391965  53.4244,-2.13479     OK    46.23       10.03         1
-```
+       code  easting  northing latitude longitude   status duration waitingtime transfers
+1 E01005756  391223     392954 53.43329 -2.13357    OK     51.50    10.03       1
+2 E01005757  390660     391186 53.41739 -2.14199    OK     42.95    0.03        0
+3 E01005754  390870     392662 53.43066 -2.13888    OK     56.47    10.03       1
+4 E01005755  391140     391965  53.4244 -2.13479    OK     46.23    10.03       1
 
+```
 
 ![](images/challenge.png) **Export the dataframe `gm_lsoa_centroids` to a CSV file and load it into QGIS or ArcGIS. A shapefile for the LSOA polygons is provided in the data folder. Join the route data from the LSOA centroids to the polygon layer. Explore how duration, waiting time and transfers vary across the LSOAs.**
 
@@ -381,6 +397,8 @@ That's the end of this practical session. Don't worry if you didn't manage to co
 
 ## Additional resources
 
+* **The otpr package**:
+[https://github.com/marcusyoung/otpr](https://github.com/marcusyoung/otpr)
 * **The official project documentation for OTP**: [http://docs.opentripplanner.org/en/latest/](http://docs.opentripplanner.org/en/latest/)
 * **The OTP project on GitHub**: [https://github.com/opentripplanner/OpenTripPlanner](https://github.com/opentripplanner/OpenTripPlanner)
 * **OTP API documentation for the Planner resource**: [http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html](http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html)
