@@ -270,7 +270,7 @@ library(otpr)
 
 ```
 
-![](images/info.png) *You find out more about the otpr package at its GitHub repository: [https://github.com/marcusyoung/otpr](https://github.com/marcusyoung/otpr).* 
+![](images/info.png) *You can find out more about the otpr package at its GitHub repository: [https://github.com/marcusyoung/otpr](https://github.com/marcusyoung/otpr).* 
 
 We are going to use two functions from the package. The first is `otp_connect()`, which defines the OTP instance and router we want to query:
 
