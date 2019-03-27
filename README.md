@@ -14,8 +14,7 @@ interface.
 2. Next, you’ll query the OTP Isochrone API to obtain travel-time polygons, visualising the accessibility
 of Manchester Airport by public transport.
 
-3. And finally, you’ll automate querying the OTP route planner API, looking up route information for
-each Lower Layer Super Output Area (LSOA) in Greater Manchester.
+3. And finally, you’ll automate querying the OTP route planner API using the [otpr R package](https://github.com/marcusyoung/otpr), looking up route information for each Lower Layer Super Output Area (LSOA) in Greater Manchester.
 
 Note: Currently OTP requires Java 8. This tutorial will not work with Java 9 or 10.
 
