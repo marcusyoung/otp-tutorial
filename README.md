@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 # OpenTripPlanner Tutorial - creating and querying your own multi-modal route planner
 
 This is an introductory tutorial (approx. 2-3 hours) covering the setup and querying of an OpenTripPlanner instance.
