@@ -1,7 +1,8 @@
 ---
 title: "OpenTripPlanner - creating and querying your own multi-modal route planner"
 author: "Marcus Young"
-date: "27 March 2019"
+date: "29 August 2019"
+geometry: margin=2.5cm
 output:
   pdf_document: 
     fig_caption: yes
@@ -11,8 +12,9 @@ classoption: a4paper
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
+
 
 ## Introduction
 
@@ -39,9 +41,11 @@ Once you have extracted this zip file, you should have the folders and files lis
 
 ### /apps ###
 
-* **otp.jar**, the OTP application, in a single runnable JAR file. This has been compiled from a modified version of the source code with average road speeds and traversal rules that are appropriate for the UK.
+* **otp.jar**, the OTP application, in a single runnable JAR file. This has been compiled from a modified version of the source code (based on v1.4) that includes a UK Way Property Set.
 
 ### /data ###
+
+* **build-config.json**, a configuration file for OTP (specifies that OTP should use the UK Way Property Set which sets road speeds and traversal permissions suitable for the UK)
 
 * **router-config.json**, a configuration file for OTP (sets left hand drive).
 
@@ -73,7 +77,7 @@ Once you have extracted this zip file, you should have the folders and files lis
 
 An OTP graph specifies every location in the region covered and how to travel between them, and is compiled by OTP using OSM data for the street and path network (used for walk, bicycle and drive modes) and GTFS data for transit scheduling.
 
-Our first task is to create the folder and file structure expected by OTP. Start by creating a base directory called `otp`. Copy the OTP JAR file to this directory from the extracted ZIP file. Next create a sub-directory called `graphs`. Directories created under `graphs` are known as OTP routers, and contain all the files required to build a graph. A single OTP instance can host several routers, for example covering different regions. Create a router called 'current', and copy over the GTFS and OSM files for the road network and current transit schedules for Greater Manchester, along with `router-config.json`, as shown below:   
+Our first task is to create the folder and file structure expected by OTP. Start by creating a base directory called `otp`. Copy the OTP JAR file to this directory from the extracted ZIP file. Next create a sub-directory called `graphs`. Directories created under `graphs` are known as OTP routers, and contain all the files required to build a graph. A single OTP instance can host several routers, for example covering different regions. Create a router called 'current', and copy over the GTFS and OSM files for the road network and current transit schedules for Greater Manchester, along with `build-config.json` and `router-config.json`, as shown below:   
 
 ```{r, engine = 'bash', eval = FALSE}
 /otp
@@ -83,6 +87,7 @@ Our first task is to create the folder and file structure expected by OTP. Start
          rail-gtfs.zip
          tfgm-gtfs.zip
          greater-manchester-osm.pbf
+         build-config.json
          router-config.json
 ```
 
@@ -265,7 +270,7 @@ We are going to use two functions from the package. The first is `otp_connect()`
 
 ```{r otpconnect, eval=FALSE}
 
-# Call otpConnect() to define a connection called otpcon
+# Call otp_connect() to define a connection called otpcon
 otpcon <-
   otp_connect(
     hostname = "localhost",
