@@ -7,11 +7,8 @@ library(progress)
 # Import LSO centroids CSV file
 gm_lsoa_centroids <- read.csv("materials/data/gm-lsoa-centroids.csv", stringsAsFactors = FALSE)
 
-# Install devtools package first
-install.packages("devtools")
-
-# Now install the otpr package from GitHub
-devtools::install_github("marcusyoung/otpr")
+# Install the otpr package
+install.packages("otpr")
 
 # Now load the package
 library(otpr)
@@ -42,9 +39,6 @@ otp_get_times(
   walkReluctance = 5,
   minTransferTime = 600
 )
-
-install.packages("progress")
-library(progress)
 
 total <- nrow(gm_lsoa_centroids) # set number of records
 pb <- progress_bar$new(total = total, format = "(:spin)[:bar]:percent") #progress bar
