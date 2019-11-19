@@ -98,13 +98,13 @@ Our first task is to create the folder and file structure expected by OTP. Start
 
 `router-config.json` is actually read when the OTP server is started, but we add it now for convenience.
 
-OTP runs within a Java virtual machine (JVM), which on the University computers is provided by the Open Java Development Kit (OpenJDK) installed. We first need to confirm that the location of OpenJDK is configured as an Environment Variable, enabling you to run the command `java` from the command prompt. Test this by entering `java -version` at the command prompt. If the version of OpenJDK is not returned, run the following command to set up the path to OpenJDK and then check again:
+OTP runs within a Java virtual machine (JVM), which on the University computers is provided by the Amazon Corretto distribution of the Open Java Development Kit (OpenJDK). We first need to confirm that the location of OpenJDK is configured as an operating system Environment Variable, enabling you to run the command `java` from the command prompt. Test this by entering `java -version` at the command prompt. If the version of OpenJDK is not returned, run the following command to set up the path to OpenJDK and then check again:
 
 ```{r, engine = 'bash', eval = FALSE}
 set path=%path%;C:\Program Files\Amazon Corretto\jdk11.0.4_10\bin
 ```
 
-![](images/hint.png) *If using your own computer, you may have the Oracle Java Runtime Environment installed, which can also be used to run OTP. Before proceding run `java -version` from the command prompt to check that you have a 1.8 version of the JVM installed (the specific sub-version doesn't matter). If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).*
+![](images/hint.png) *If using your personal computer, you may have the Oracle Java Runtime Environment installed, which can also be used to run OTP. Before proceding run `java -version` from the command prompt to check that you have a 1.8 version of the JVM installed (the specific sub-version doesn't matter). If you do not have the correct JRE installed you will need to install it for your operating system from: [http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).*
 
 With the folder structure created and the files in place, we can now build the graph by running OTP and specifying the `--build` option. From the command prompt, change to the `otp` directory that you created and run the following command:
 
