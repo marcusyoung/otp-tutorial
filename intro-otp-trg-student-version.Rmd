@@ -2,7 +2,7 @@
 title: "OpenTripPlanner - creating and querying your own multi-modal route planner"
 subtitle: "CENV6153 Transport Modelling - Transport Planning & GIS: Practical Session"
 author: "Marcus Young"
-date: "15 November 2019"
+date: "21 November 2019"
 geometry: margin=2.5cm
 output:
   pdf_document: 
