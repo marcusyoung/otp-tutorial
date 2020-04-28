@@ -25,3 +25,4 @@ vignettes/*.pdf
 *.log
 .Rproj.user
 otp-tutorial.Rproj
+qgis

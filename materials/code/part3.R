@@ -33,7 +33,7 @@ otp_get_times(
   toPlace =   c(53.36274,-2.27293),
   mode = 'TRANSIT',
   detail = TRUE,
-  date = '11-25-2018',
+  date = '04-28-2020',
   time = '08:00:00',
   maxWalkDistance = 1600,
   walkReluctance = 5,
@@ -53,7 +53,7 @@ for (i in 1:total) {
       toPlace =  c(53.36274,-2.27293),
       mode = 'TRANSIT',
       detail = TRUE,
-      date = '11-26-2018',
+      date = '04-28-2020',
       time = '08:00:00',
       maxWalkDistance = 1600, # allows 800m at both ends of journey
       walkReluctance = 5,

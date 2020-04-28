@@ -2,7 +2,7 @@
 
 This is an introductory tutorial (approx. 2-3 hours) covering the setup and querying of an OpenTripPlanner instance.
 
-Latest update: 29 August 2019 - now using v1.4 of OTP.
+Latest update: 28 April 2020.
 
 [Tutorial in PDF format](https://github.com/marcusyoung/otp-tutorial/blob/master/intro-otp.pdf)
 
@@ -17,9 +17,9 @@ of Manchester Airport by public transport.
 
 3. And finally, you’ll automate querying the OTP route planner API using the [otpr R package](https://github.com/marcusyoung/otpr), looking up route information for each Lower Layer Super Output Area (LSOA) in Greater Manchester.
 
-Note: Currently OTP requires Java 8. This tutorial will not work with Java 9 or 10.
+Note: Currently OTP requires Java 8. This tutorial may not work with later versions of Java.
 
-Note: The GTSF feeds provided in this tutorial for the Greater Manchester area were obtained in November 2018. You will need to take this into account when querying OTP otherwise you may not get any transit routes returned. Ensure that you request a route plan for the period covered by the GTFS feeds.
+Note: The GTSF feeds provided in this tutorial for the Greater Manchester area were obtained in April 2020. You will need to take this into account when querying OTP otherwise you may not get any transit routes returned. Ensure that you request a route plan for the period covered by the GTFS feeds.
 
 ![](images/airport-isochrone-readme.png)
 
