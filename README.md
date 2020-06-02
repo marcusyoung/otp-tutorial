@@ -1,8 +1,4 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+
 # OpenTripPlanner Tutorial - creating and querying your own multi-modal route planner
 
 This is an introductory tutorial (approx. 2-3 hours) covering the setup and querying of an OpenTripPlanner instance.
@@ -30,7 +26,7 @@ Note: The GTSF feeds provided in this tutorial for the Greater Manchester area w
 
 ## Want to say thanks?
 
-<a href="https://ko-fi.com/marcusyoung"><img src='man/figures/BuyMeACoffee_blue@2x.png' align="left" width=200/></a>
+<a href="https://ko-fi.com/marcusyoung"><img src='images/BuyMeACoffee_blue@2x.png' align="left" width=200/></a>
 
 </br>
 
