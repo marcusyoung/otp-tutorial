@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # OpenTripPlanner Tutorial - creating and querying your own multi-modal route planner
 
 This is an introductory tutorial (approx. 2-3 hours) covering the setup and querying of an OpenTripPlanner instance.
@@ -22,5 +27,11 @@ Note: Currently OTP requires Java 8. This tutorial may not work with later versi
 Note: The GTSF feeds provided in this tutorial for the Greater Manchester area were obtained in April 2020. You will need to take this into account when querying OTP otherwise you may not get any transit routes returned. Ensure that you request a route plan for the period covered by the GTFS feeds.
 
 ![](images/airport-isochrone-readme.png)
+
+## Want to say thanks?
+
+<a href="https://ko-fi.com/marcusyoung"><img src='man/figures/BuyMeACoffee_blue@2x.png' align="left" width=200/></a>
+
+</br>
 
 
