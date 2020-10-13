@@ -24,6 +24,15 @@ Note: The GTSF feeds provided in this tutorial for the Greater Manchester area w
 
 ![](images/airport-isochrone-readme.png)
 
+## How to cite
+
+Please cite this tutorial if you use it for your research. Suggested citation:
+
+```
+Young, M. (2020). OpenTripPlanner - creating and querying your own multi-modal route planner.
+URL: https://github.com/marcusyoung/otp-tutorial.
+```
+
 ## Want to say thanks?
 
 <a href="https://ko-fi.com/marcusyoung"><img src='images/BuyMeACoffee_blue@2x.png' align="left" width=200/></a>
