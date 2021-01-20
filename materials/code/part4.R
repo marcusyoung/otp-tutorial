@@ -1,4 +1,4 @@
-# Accompanying code for Part 3 of OTP Tutorial
+# Accompanying code for Part 4 of OTP Tutorial
 
 # Call otp_create_surface() to generate a surface
 otp_create_surface(
