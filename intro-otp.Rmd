@@ -616,7 +616,7 @@ That's the end of this introductory tutorial. Don't worry if you didn't manage t
 
 ## Using OTPv2 {#otpv2}
 
-OTPv2 contains a new public transit routing component that delivers better performance in large transportation networks and geographic areas, and generates a wider variety of alternative itineraries. However, v2 does not include the isochrone and surface analysis features that are available in v1 and does not support multiple routers. The otpr R package is fully compatible with v2 and you can follow Part 2 of this tutorial using v2. 
+OTPv2 contains a new public transit routing component that delivers better performance in large transportation networks and geographic areas, and generates a wider variety of alternative itineraries. However, v2 does not include the isochrone and surface analysis features that are available in v1 and does not support multiple routers. The otpr R package is fully compatible with v2 and you can follow Part 3 of this tutorial using v2. 
 
 You will first need to obtain the v2 `.jar` file from: [https://repo1.maven.org/maven2/org/opentripplanner/otp/2.0.0/otp-2.0.0-shaded.jar](https://repo1.maven.org/maven2/org/opentripplanner/otp/2.0.0/otp-2.0.0-shaded.jar). Rename this file `otp2.jar` and copy it to your `/otp` directory.
 
