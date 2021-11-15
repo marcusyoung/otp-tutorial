@@ -98,10 +98,10 @@ Our first task is to create the folder and file structure expected by OTP. Start
 
 `router-config.json` is actually read when the OTP server is started, but we add it now for convenience.
 
-OTP runs within a Java virtual machine (JVM), which on the University computers is provided by the Amazon Corretto distribution of the Open Java Development Kit (OpenJDK). We first need to confirm that the location of OpenJDK is configured as an operating system Environment Variable, enabling you to run the command `java` from the command prompt. Test this by entering `java -version` at the command prompt. If the version of OpenJDK is not returned, run the following command to set up the path to OpenJDK and then check again:
+OTP runs within a Java virtual machine (JVM), which on the University computers is provided by the Amazon Corretto distribution of the Open Java Development Kit (OpenJDK). We first need to confirm that the location of OpenJDK is configured as an operating system Environment Variable, enabling you to run the command `java` from the command prompt. Test this by entering `java -version` at the command prompt. If the version of OpenJDK is not returned, you will need to replace `java` with the following full path (including the quotation marks) when running the OTP commands to build a graph and start the OTP server:
 
 ```{r, engine = 'bash', eval = FALSE}
-set path=%path%;C:\Program Files\Amazon Corretto\jdk11.0.4_10\bin
+"C:\Program Files\Amazon Corretto\jdk11.0.13_8\bin\java.exe" 
 ```
 
 ![](images/hint.png) *If using your personal computer, you may have the Oracle Java Runtime Environment installed, which can also be used to run OTP. Before proceding run `java -version` from the command prompt to check that you have a 1.8 version of the JVM installed (the specific sub-version doesn't matter). If you do not have the correct JRE installed you will need to install it for your operating system from: [https://www.oracle.com/java/technologies/javase-jre8-downloads.html](https://www.oracle.com/java/technologies/javase-jre8-downloads.html).*
@@ -131,7 +131,7 @@ It should only take a minute or two for OTP to load the graph and start the Griz
 
 You can now access the web interface using the URL: [http://localhost:8080](http://localhost:8080). **Note:** The web interface does not work correctly in Internet Explorer - use Firefox or Chrome. You can now zoom into the Manchester area and request a route by setting an origin and a destination directly on the map (by right clicking your mouse) and you can specify travel dates, times and modes using the 'Trip Options' window (see Figure \ref{fig:otpgui}). 
 
-![](images/hint.png) *The GTFS schedules used in this tutorial are several months old; set the travel date to a day in January 2021 to see a full range of typical transit services.*
+![](images/hint.png) *The GTFS schedules used in this tutorial are several months old; set the travel date to a day in January 2021 to see the full range of typical transit services.*
 
 ```{r, out.width = "10cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpgui}OTP Web GUI"}
 knitr::include_graphics("images/otpwebgui.png")
@@ -158,7 +158,7 @@ Now that we have a working instance of OTP, we'll use it to generate some travel
 
 To send the query to OTP, you could use a web browser and submit a long URL, something like this:
 
-[http://localhost:8080/otp/routers/current/isochrone?toPlace=53.3627432,-2.2729342&fromPlace=53.3627432,-2.2729342&arriveBy=TRUE&mode=WALK,TRANSIT&date=04-28-2020&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400](http://localhost:8080/otp/routers/current/isochrone?toPlace=53.3627432,-2.2729342&fromPlace=53.3627432,-2.2729342&arriveBy=TRUE&mode=WALK,TRANSIT&date=04-28-2020&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400)
+[http://localhost:8080/otp/routers/current/isochrone?toPlace=53.3627432,-2.2729342&fromPlace=53.3627432,-2.2729342&arriveBy=TRUE&mode=WALK,TRANSIT&date=01-19-2021&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400](http://localhost:8080/otp/routers/current/isochrone?toPlace=53.3627432,-2.2729342&fromPlace=53.3627432,-2.2729342&arriveBy=TRUE&mode=WALK,TRANSIT&date=01-19-2021&time=08:00am&maxWalkDistance=1600&walkReluctance=5&minTransferTime=600&cutoffSec=900&cutoffSec=1800&cutoffSec=2700&cutoffSec=3600&cutoffSec=4500&cutoffSec=5400)
 
 OTP will then return the isochrone polygons. Depending on the browser you are using (and how it makes the request) the polygons will be returned in either GeoJSON format or as a zipped shapefile, which can then be downloaded and imported into a GIS.
 
