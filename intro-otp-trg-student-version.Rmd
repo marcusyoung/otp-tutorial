@@ -2,7 +2,7 @@
 title: "OpenTripPlanner - creating and querying your own multi-modal route planner"
 subtitle: "CENV6153 Transport Modelling - Transport Planning & GIS: Practical Session"
 author: "Marcus Young"
-date: "28 April 2020"
+date: "14 November 2021"
 geometry: margin=2.5cm
 output:
   pdf_document: 
@@ -23,7 +23,7 @@ multi-agency public transport routing through imported GTFS feeds (see Figure \r
 
 A major advantage of running your own multi-modal route planner is the ability to carry out analysis using amended transport data. Services such as as Google Maps or TransportAPI are based on current public transport schedules and the existing road network. OTP enables you to modify transit schedules and/or make changes to the underlying street network. By editing a local copy of OSM, you can model the effects of opening new roads, closing roads, or imposing other restrictions. You can also look back in time. For example, you might want to examine the effect of reductions in rural bus services on accessibility of health facilities. To do this you would need a network with bus schedules as they were in previous years.
 
-This practical session consists of three parts:
+This practical session uses version 1.5 of OTP and consists of three parts:
 
 1. You'll start by building an OTP network graph for the street network and public transport services in Greater Manchester, and then launch your OTP instance and request routes using the web interface.
 
@@ -36,7 +36,7 @@ To complete the practical you will need access to QGIS or ArcGIS, RStudio and Fi
 
 ## Supporting materials
 
-The datasets and applications used in this practical are available from a GitHub repository and can be downloaded in a single zip file called `materials.zip`, from here: [https://github.com/marcusyoung/otp-tutorial](https://github.com/marcusyoung/otp-tutorial).
+The datasets and applications used in this practical are available from a GitHub repository and can be downloaded in a single zip file called `materials-student-version.zip`, from here: [https://github.com/marcusyoung/otp-tutorial](https://github.com/marcusyoung/otp-tutorial).
 
 Extract this zip file to `C:\users\yourusername`. You should have the folders and files listed below. **Note**: the GTFS ZIP files must not be extracted.
 
@@ -129,7 +129,9 @@ java -Xmx2G -jar otp.jar --router current --graphs graphs --server
 
 It should only take a minute or two for OTP to load the graph and start the Grizzly server. If all has worked you should see the message: `Grizzly server running`. You must leave the command prompt open. If you close it, the server will stop running. You can stop the server without closing the window by entering `Ctrl-C`.
 
-You can now access the web interface using the URL: [http://localhost:8080](http://localhost:8080). **Note:** The web interface does not work correctly in Internet Explorer - use Firefox or Chrome. You can now zoom into the Manchester area and request a route by setting an origin and a destination directly on the map (by right clicking your mouse) and you can specify travel dates, times and modes using the 'Trip Options' window (see Figure \ref{fig:otpgui}).
+You can now access the web interface using the URL: [http://localhost:8080](http://localhost:8080). **Note:** The web interface does not work correctly in Internet Explorer - use Firefox or Chrome. You can now zoom into the Manchester area and request a route by setting an origin and a destination directly on the map (by right clicking your mouse) and you can specify travel dates, times and modes using the 'Trip Options' window (see Figure \ref{fig:otpgui}). 
+
+![](images/hint.png) *The GTFS schedules used in this tutorial are several months old; set the travel date to a day in January 2021 to see a full range of typical transit services.*
 
 ```{r, out.width = "10cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpgui}OTP Web GUI"}
 knitr::include_graphics("images/otpwebgui.png")
@@ -143,7 +145,7 @@ Congratulations, you now have your own multi-modal router planner!
 
 For troubleshooting routing issues, you can visualise the traversal permissions of street edges, the bike safety of edges, and how transit stops are linked to streets. For these additional debug layers to be available, add `?debug_layers=true` to the URL, like this:  [http://localhost:8080?debug_layers=true](http://localhost:8080?debug_layers=true). The extra layers will be listed in the layer stack menu. Figure \ref{fig:otpdebug} shows the Bike Safety layer (green signifies most safe, red the least safe). If you zoom in to the street edges you'll see the cost weightings that are applied.
 
-![](images/info.png) You can read more about the different debug layers in the official OTP documentation: [http://docs.opentripplanner.org/en/latest/Troubleshooting-Routing/#debug-layers](http://docs.opentripplanner.org/en/latest/Troubleshooting-Routing/#debug-layers). 
+![](images/info.png) You can read more about the different debug layers in the official OTP documentation: [http://docs.opentripplanner.org/en/v1.5.0/Troubleshooting-Routing/#debug-layers](http://docs.opentripplanner.org/en/v1.5.0/Troubleshooting-Routing/#debug-layers).
 
 ```{r, out.width = "10cm", echo=FALSE, fig.align='center', fig.cap="\\label{fig:otpdebug}OTP Web GUI with Bike Safety debug layer activated"}
 knitr::include_graphics("images/otpdebug.png")
@@ -176,7 +178,7 @@ airport_current <- GET(
     fromPlace = "53.3627432,-2.2729342", # latlong of Manchester Airport
     arriveBy = TRUE,
     mode = "WALK,TRANSIT", # modes we want the route planner to use
-    date = "04-28-2020",
+    date = "01-19-2021",
     time= "08:00am",
     maxWalkDistance = 1600, # in metres
     walkReluctance = 5,
@@ -236,7 +238,7 @@ We'll start by importing the CSV file `gm-lsoa-centroids.csv` into an R datafram
 ```{r load lsao, eval=FALSE}
 
 # Import the LSOA CSV file
-gm_lsoa_centroids <- read.csv("materials/data/gm-lsoa-centroids.csv",
+gm_lsoa_centroids <- read.csv("materials-student-version/data/gm-lsoa-centroids.csv",
                               stringsAsFactors = FALSE)
 
 
@@ -312,7 +314,7 @@ The second function we will use is `otp_get_times()`, which retrieves an itinera
       toPlace =   c(53.36274,-2.27293),
       mode = 'TRANSIT',
       detail = TRUE,
-      date = '04-28-2020',
+      date = '01-19-2021',
       time = '08:00:00',
       maxWalkDistance = 1600,
       walkReluctance = 5,
@@ -326,9 +328,9 @@ $errorId
 
  $itineraries
    start               end                  timeZone       duration walkTime
- 1 04-28-2020 08:11:23 2020-04-28 08:57:17  Europe/London  45.9     5.87    
+ 1 2021-01-19 08:15:49 2021-01-19 09:12:20  Europe/London     56.52     9.45
    transitTime  waitingTime  transfers
-   30           10.03        1
+         34.57         12.5          1
    
 ```
 
@@ -354,7 +356,7 @@ for (i in 1:total) {
       toPlace =  c(53.36274,-2.27293),
       mode = 'TRANSIT',
       detail = TRUE,
-      date = '04-28-2020',
+      date = '01-19-2021',
       time = '08:00:00',
       maxWalkDistance = 1600, # allows 800m at both ends of journey
       walkReluctance = 5,
@@ -378,10 +380,12 @@ Once the loop is complete you can view the `gm_lsoa_centroids` dataframe, and se
 
 ```{r, engine = 'bash', eval = FALSE}
        code  easting  northing latitude longitude status duration waitingtime transfers
-1 E01005756  391223   392954   53.43329 -2.13357  OK     45.90    10.03       1
-2 E01005757  390660   391186   53.41739 -2.14199  OK     55.35    23.03       1
-3 E01005754  390870   392662   53.43066 -2.13888  OK     51.87    10.03       1
-4 E01005755  391140   391965   53.4244  -2.13479  OK     45.63    15.03       1
+1 E01005756  391223   392954   53.43329  -2.13357     OK    56.52        12.5         1
+2 E01005757  390660   391186   53.41739  -2.14199     OK    51.72        12.5         1
+3 E01005754  390870   392662   53.43066  -2.13888     OK    61.45        12.5         1
+4 E01005755  391140   391965   53.42440  -2.13479     OK    51.68        12.5         1
+5 E01005752  393251   391229   53.41782  -2.10300     OK    66.83        13.5         1
+6 E01005753  391339   392429   53.42858  -2.13181     OK    70.32        28.5         1
 
 ```
 
@@ -402,8 +406,8 @@ That's the end of this practical session. Don't worry if you didn't manage to co
 
 * **The otpr package**:
 [https://github.com/marcusyoung/otpr](https://github.com/marcusyoung/otpr)
-* **The official project documentation for OTP**: [http://docs.opentripplanner.org/en/latest/](http://docs.opentripplanner.org/en/latest/)
+* **The official project documentation for OTP v1.5**: [http://docs.opentripplanner.org/en/v1.5.0/](http://docs.opentripplanner.org/en/v1.5.0/)
 * **The OTP project on GitHub**: [https://github.com/opentripplanner/OpenTripPlanner](https://github.com/opentripplanner/OpenTripPlanner)
-* **OTP API documentation for the Planner resource**: [http://dev.opentripplanner.org/apidoc/1.4.0/resource_PlannerResource.html](http://dev.opentripplanner.org/apidoc/1.4.0/resource_PlannerResource.html)
+* **OTP API documentation for the Planner resource**: [http://dev.opentripplanner.org/apidoc/1.5.0/resource_PlannerResource.html](http://dev.opentripplanner.org/apidoc/1.5.0/resource_PlannerResource.html)
 * **onebusaway-gtfs-transformer-cli, a useful command-line application for transforming GTFS feeds**: [http://developer.onebusaway.org/modules/onebusaway-gtfs-modules/1.3.4/onebusaway-gtfs-transformer-cli.html](http://developer.onebusaway.org/modules/onebusaway-gtfs-modules/1.3.4/onebusaway-gtfs-transformer-cli.html)
 * **JOSM, an application for editing local copies of OSM data**: [https://josm.openstreetmap.de/](https://josm.openstreetmap.de/).
